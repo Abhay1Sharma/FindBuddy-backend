@@ -42,9 +42,9 @@ const PORT = 3001;
 const app = express();
 const httpServer = createServer(app); // Create the HTTP server
 
-const frontendUrl = "http://localhost:3000";
-const backendUrl = "http://localhost:3001";
-const dashboardUrl = "http://localhost:3002";
+const frontendUrl = "https://find-buddy-frontend.vercel.app";
+const backendUrl = "https://findbuddy-back.onrender.com";
+const dashboardUrl = "https://find-buddy-dashboard.vercel.app";
 
 // 1. Initialize Socket.io[]
 const io = new Server(httpServer, {
