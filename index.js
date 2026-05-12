@@ -43,14 +43,21 @@ const app = express();
 const httpServer = createServer(app); // Create the HTTP server
 
 const frontendUrl = "https://find-buddy-frontend.vercel.app";
-const backendUrl = "https://find-buddy-backend.vercel.app";
+const backendUrl = "https://findbuddy-back.onrender.com";
 const dashboardUrl = "https://find-buddy-dashboard.vercel.app";
+
+app.set("trust proxy", 1);
+app.use(cors({
+    origin: [frontendUrl, dashboardUrl],
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+}));
 
 // 1. Initialize Socket.io[]
 const io = new Server(httpServer, {
     cors: {
         origin: [frontendUrl, dashboardUrl],
-        methods: ["GET", "POST"],
+        methods: ["GET", "POST", "PUT", "DELETE"],
         credentials: true
     }
 });
@@ -65,7 +72,7 @@ main()
     .catch((err) => console.log("Database Connection Error ❌", err));
 
 // 3. Middlewares
-app.use(cors({ origin: [`${frontendUrl}`, `${dashboardUrl}`], credentials: true }));
+// app.use(cors({ origin: [`${frontendUrl}`, `${dashboardUrl}`], credentials: true }));
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(bodyParser.json({ limit: '50mb' }));
@@ -76,12 +83,14 @@ app.use(flash());
 const sessionOptions = {
     secret: "mysupersecret",
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false,
+    proxy: true,
     cookie: {
-        expires: Date.now() + 7 * 24 * 60 * 60 * 1000,
-        maxAge: 7 * 24 * 60 * 60 * 1000,
-        httpOnly: true
-    },
+        secure: true,
+        sameSite: "none",
+        httpOnly: true,
+        maxAge: 7 * 24 * 60 * 60 * 1000
+    }
 };
 
 cloudinary.config({
@@ -89,7 +98,6 @@ cloudinary.config({
     api_key: process.env.REACT_APP_CLOUDINARY_API_KEY,
     api_secret: process.env.REACT_APP_CLOUDINARY_API_SECRET,
 });
-
 
 app.use(session(sessionOptions));
 app.use('/uploads', express.static('uploads'));
