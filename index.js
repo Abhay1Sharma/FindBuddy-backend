@@ -29,7 +29,7 @@ import { Repost } from "./src/models/RepostModel.js"
 import { Connection } from './src/models/ConnectionModel.js';
 import { populate } from 'dotenv';
 import { ConnectionPost } from './src/models/ConnectionPostModel.js';
-import { handleChat } from './controllers/chatbotController.js';
+import { handleChat } from './chatbotController.js';
 
 const userSocketMap = new Map(); // userId -> socketId
 
@@ -112,7 +112,7 @@ passport.deserializeUser(User.deserializeUser());
 
 // 5. Routes
 app.use("/", Auth);
-router.post('/api/chatbot', handleChat);
+app.post('/api/chatbot', handleChat);
 
 
 // 6. Socket.io Logic
