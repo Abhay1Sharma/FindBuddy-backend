@@ -45,9 +45,9 @@ const app = express();
 const httpServer = createServer(app); // Create the HTTP server
 const ai = new GoogleGenAI({ apiKey: "AIzaSyC5gzSgdEZnmANn_ZkUlJydNicL9MKTWto"});
 
-const frontendUrl = "https://find-buddy-frontend.vercel.app";
-const backendUrl = "https://findbuddy-back.onrender.com";
-const dashboardUrl = "https://find-buddy-dashboard.vercel.app";
+const frontendUrl = process.env.REACT_APP_FRONTEND_URL;
+const backendUrl = process.env.REACT_APP_BACKEND_URL;
+const dashboardUrl = process.env.REACT_APP_DASHBOARD_URL;
 
 app.set("trust proxy", 1);
 app.use(cors({
