@@ -13,6 +13,7 @@ import multer from 'multer';
 import bodyParser from "body-parser";
 import flash from "connect-flash";
 import LocalStrategy from "passport-local";
+import { GoogleGenAI } from "@google/genai";
 
 // Import your models and routers
 import Auth from "./routers/Auth.js";
@@ -42,6 +43,7 @@ if (!fs.existsSync(uploadDir)) {
 const PORT = 3001;
 const app = express();
 const httpServer = createServer(app); // Create the HTTP server
+const ai = new GoogleGenAI({ apiKey: "AIzaSyC5gzSgdEZnmANn_ZkUlJydNicL9MKTWto"});
 
 const frontendUrl = "https://find-buddy-frontend.vercel.app";
 const backendUrl = "https://findbuddy-back.onrender.com";
@@ -1180,6 +1182,47 @@ app.post("/updateIntro", uploadFields, async (req, res) => {
     } catch (err) {
         console.error("Route Error:", err);
         res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
+app.post("/api/chatbot", async (req, res) => {
+    // 1. Destructure the request body coming from Hero.js
+    const { message, history } = req.body;
+
+    // Safety fallback: Validate that a message actually arrived
+    if (!message) {
+        return res.status(400).json({ error: "Message content is required" });
+    }
+
+    try {
+        // 2. Map your React chat logs format to the structured format the SDK expects
+        const contents = [
+            ...history.map(msg => ({
+                role: msg.sender === 'user' ? 'user' : 'model',
+                parts: [{ text: msg.text }]
+            })),
+            { role: 'user', parts: [{ text: message }] }
+        ];
+
+        // 3. Send the structured context array to the model
+        const response = await ai.models.generateContent({
+            model: 'gemini-2.5-flash',
+            contents: contents,
+            config: {
+                systemInstruction: `
+                    You are "BuddyAI", the official virtual fitness assistant for FindBuddy.
+                    FindBuddy connects workout partners based on gym routines and geographic proximity.
+                    Your tone is encouraging, minimalistic, and clear.
+                `
+            }
+        });
+
+        // 4. Return the text string answer directly back to Axios
+        res.status(200).json({ reply: response.text });
+
+    } catch (error) {
+        console.error("Gemini API Error details:", error);
+        res.status(500).json({ error: "Internal Server Processing Error" });
     }
 });
 
