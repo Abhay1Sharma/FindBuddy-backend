@@ -1188,6 +1188,7 @@ app.post("/updateIntro", uploadFields, async (req, res) => {
 app.post("/api/chatbot", async (req, res) => {
     // 1. Destructure the request body coming from Hero.js
     const { message, history } = req.body;
+    console.log(req.body);
 
     // Safety fallback: Validate that a message actually arrived
     if (!message) {
