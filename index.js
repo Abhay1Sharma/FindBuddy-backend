@@ -43,7 +43,7 @@ if (!fs.existsSync(uploadDir)) {
 const PORT = 3001;
 const app = express();
 const httpServer = createServer(app); // Create the HTTP server
-const ai = new GoogleGenAI({ apiKey: "AIzaSyC5gzSgdEZnmANn_ZkUlJydNicL9MKTWto"});
+const ai = new GoogleGenAI({ apiKey: process.env.REACT_APP_BOT_API});
 
 const frontendUrl = process.env.REACT_APP_FRONTEND_URL;
 const backendUrl = process.env.REACT_APP_BACKEND_URL;
